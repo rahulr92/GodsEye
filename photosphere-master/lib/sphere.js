@@ -1,11 +1,20 @@
-// Google Photosphere
+	// Google Photosphere
 // built by @kennydude
 
 // Thanks to three.js example and http://stackoverflow.com/questions/1578169/how-can-i-read-xmp-data-from-a-jpg-with-php
 
 // Usage: new Photosphere("image.jpg").loadPhotosphere(document.getElementById("myPhotosphereID"));
 // myPhotosphereID must have width/height specified!
+Photosphere.prototype.setLatLong=function(alpha,gamma)
+{
+	self=this;
+	self.lat=alpha;
+	self.lon=gamma;
+	
+	self.render();
+	
 
+};
 
 function Photosphere(image){
 	this.image = image;
@@ -143,7 +152,7 @@ Photosphere.prototype.start3D = function(image){
 
 	this.resetTimer(this, 3000);
 };
-
+var gamma=0;var alpha=0;
 Photosphere.prototype.startMoving = function(){
 	self = this;
 	this.interval = setInterval(function(){
@@ -154,9 +163,14 @@ Photosphere.prototype.startMoving = function(){
 		//else if(self.lat > 0){ self.lat -= 0.04; }
 		//else if(self.lat < 0 && self.lat > 10) { self.lat += 0.1; }
 		//else if(self.lat < 0) { self.lat += 0.04;  }
-
-	//	self.render();
-	}, 10);
+		//self.lon=(self.lon+1);
+		gamma=gamma+0.03;
+		//alpha=alpha+0.3;
+		self.setLatLong(alpha,gamma);
+		console.log("lat = "+self.lat);
+		console.log("long = "+self.lon);
+		//self.render();
+	}, 10000000);
 };
 
 Photosphere.prototype.resetTimer = function(self, t){
@@ -282,13 +296,13 @@ Photosphere.prototype.render = function(){
 	this.lat = Math.max( - 85, Math.min( 85, this.lat ) );
 	phi = ( 90 - this.lat ) * Math.PI / 180;
 	theta = this.lon * Math.PI / 180;
-	
-	this.target.x =500* Math.sin( phi ) * Math.cos( theta );
+
+	this.target.x = 500 * Math.sin( phi ) * Math.cos( theta );
 	this.target.y = 500 * Math.cos( phi );
 	this.target.z = 500 * Math.sin( phi ) * Math.sin( theta );
-console.log("lat = "+this.lat+" long = "+this.lon+"theta = "+theta+" x= "+this.target.x+"y= "+this.target.y+" z = "+this.target.z);
 
-this.camera.lookAt( this.target );
+	this.camera.lookAt( this.target );
+
 	this.renderer.render( this.scene, this.camera );
 };
 

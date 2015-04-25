@@ -18,6 +18,7 @@
 		<script type="text/javascript" src="extern/three.min.js"></script>
 		<script async="true" onload="setup();" type="text/javascript" src="lib/sphere.js"></script>
 		<script type="text/javascript">
+		var sphere;
 			function setup(){
 				document.getElementById("goForIt").onclick = function(){
 					sphere = new Photosphere(this.getAttribute("href"));
@@ -30,17 +31,79 @@
 					// files is a FileList of File objects. List some properties.
 					var output = [];
 					for (var i = 0, f; f = files[i]; i++) {
-						var blob = URL.createObjectURL(f);
+						//var blob = URL.createObjectURL(f);
+						 blob = URL.createObjectURL(f);
 						var reader = new FileReader();
 						reader.onloadend = function(evt){
 							sphere = new Photosphere( blob );
 							sphere.binary_data = evt.target.result;
 							sphere.loadPhotosphere(document.getElementById("sphere"));
+							console.log("sp ="+sphere);
 						}
 						reader.readAsBinaryString(f);
 					}
 				});
 			}
+
 		</script>
+		<script src="socket.io-1.2.0.js"></script>
+    	<script src="jquery-1.11.1.js"></script>
+		  <script type="text/javascript">
+
+		    init();
+		    var count = 0;
+
+		    function init() {
+		      if (window.DeviceOrientationEvent) {
+		        //document.getElementById("doEvent").innerHTML = "DeviceOrientation";
+		        // Listen for the deviceorientation event and handle the raw data
+		        window.addEventListener('deviceorientation', function(eventData) {
+		          // gamma is the left-to-right tilt in degrees, where right is positive
+		          var tiltLR = eventData.gamma;
+
+		          // beta is the front-to-back tilt in degrees, where front is positive
+		          var tiltFB = eventData.beta;
+
+		          // alpha is the compass direction the device is facing in degrees
+		          var dir = eventData.alpha
+
+		          // call our orientation event handler
+		          deviceOrientationHandler(tiltLR,tiltFB);
+		          }, false);
+		      } else {
+		     //   document.getElementById("doEvent").innerHTML = "Not supported on your device or browser.  Sorry."
+		      }
+		    }
+				var oldTilt;
+				var oldDir;
+				var oldFB;
+		    function deviceOrientationHandler(tiltLR,tiltFB) {
+		    	//sphere = new Photosphere( blob );
+			if(sphere!=undefined)
+				{
+				// tmpDir=oldDir;
+				// tmpTilt=oldTilt;
+				// tmpFB=oldFB;
+				// oldFB=tiltFB;
+				// oldDir=dir;
+			//	oldTilt=tiltLR;
+			//	tiltLR=tiltLR-tmpTilt;
+				// dir=dir-tmpDir;
+				// tiltFB=tiltFB-tmpFB;
+		       sphere.setLatLong(Math.round(tiltLR),Math.round(tiltFB));
+		      	var socket = io();	
+			    console.log(Math.round(tiltLR)+':'+Math.round(tiltFB));
+		        socket.emit('update', Math.round(tiltLR)+':'+Math.round(tiltFB));    
+				}
+
+		    }
+
+
+		    // Some other fun rotations to try...
+		    //var rotation = "rotate3d(0,1,0, "+ (tiltLR*-1)+"deg) rotate3d(1,0,0, "+ (tiltFB*-1)+"deg)";
+		    //var rotation = "rotate("+ tiltLR +"deg) rotate3d(0,1,0, "+ (tiltLR*-1)+"deg) rotate3d(1,0,0, "+ (tiltFB*-1)+"deg)";
+		  </script>
+
+
 	</body>
 </html>
