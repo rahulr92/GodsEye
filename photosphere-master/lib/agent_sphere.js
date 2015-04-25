@@ -303,15 +303,7 @@ Photosphere.prototype.render = function(){
 
 	this.camera.lookAt( this.target );
 
-	//send before rendering
-	console.log("guided is "+$('#guided').is(":checked"));
-	if($('#guided').is(":checked")){
-		var socket = io();	
-		socket.emit('update', this.lat+':'+this.lon);    
-	}
-
 	this.renderer.render( this.scene, this.camera );
-
 };
 
 Photosphere.prototype.loadBinary = function(callback){
